@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>上传房屋图片</title>
+    <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.form.min.js"></script>
+    <script type="text/javascript" src="/static/js/template-web.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css">
+
+    <script type="text/javascript">
+        function getCookie(name){      
+           var r=document.cookie.match("\\b"+name+"=([^;]*)\\b")
+           return r?r[1]:undefined
+       }
+
+       function getUrlArg(arg){
+            var url=window.location.search;
+            if(url != ""){
+                var val=url.match('.*?'+arg+'=(.*)?(\&|$)')[1];
+                return val;  
+            }
+            else
+                return "";
+        }
+
+        function back(){
+            window.location='http://192.168.0.112:8000/html/house_detail.html?house_id='+getUrlArg('house_id');
+        }
+
+        function getHouseImage(house_id){
+            $.get('/gethouseimages',{"house_id":house_id,"operator":"insert"},function(data){
+                if(data.ret == "1"){
+                    var htm=template('image_item',data);
+                    $('#img_list').html(template('load_item',{items:data.img_list}));
+                }
+            })
+        }
+
+        function removeImage(image_id){
+            $.get('/removehouseimage',{"image_id":image_id,"house_id":getUrlArg("house_id"),"operator":"remove"},function(data){
+                if(data.ret == "1"){
+                    $('#pimg_'+image_id).parent.remove();
+                }
+            })
+        }
+
+        $(function(){
+            var house_id=getUrlArg('house_id');
+            getHouseImage(house_id);
+
+            $('#house_id').attr('value',house_id);
+
+
+            $('#upload_image').submit(function(e){
+                e.preventDefault();
+                options={
+                    url:"/putphoto/revise_photo",
+                    type:'POST',
+                    headers:{
+                        'X-XSRFTOKEN':getCookie('_xsrf'),
+                    },
+                    success:function(data){
+                        if("1" == data.ret){
+                            var image_list=$('#image_detail #image_id').text();
+                            if(image_list.indexOf(data.img_id) == -1 || image_list.length==0){
+                                console.log(data.img_src);
+                                var htm=template('image_item',data);
+                                $('#img_list').append(htm);
+                            }
+                        }
+                    }
+                }
+                $(this).ajaxSubmit(options);
+            })
+        })
+    </script>
+</head>
+<body>
+    <div class="box">
+        <div class="navigate">
+            <div class="fl navigate_image_div" onclick="back()"></div>
+            <div style="width: 100%; text-align: center; margin-top:13px;margin-left: -25px;">上传房源图片</div>
+        </div>
+        <div class="content">
+            <div class="part_box"> 
+                <form method="post"  enctype="multipart/form-data" class="margin_lr_10px" id="upload_image">
+                    <input type="file"" name="choose_photo" class="margin_tb_10px"><br>
+                    <input type="submit" value="上传" class="button" id="image_submit"><br>
+                    <input type="hidden" name="image_type" value="house_image">
+                    <input type="hidden" name="house_id" value="" id="house_id">
+                </form>
+            </div>
+            <div class="show_house_image">
+                <ul class="margin_lr_10px margin_tb_10px" id="img_list">
+                    <script type="text/html" id="load_item">
+                    {{each items as item}}
+                    <li id="image_detail">
+                        <div class="fl" id="pimg_{{item.image_id}}"><img src="{{item.image_path}}" alt="img1" style="width: 100%;height: 100%;"></div> 
+                        <ul style="margin-left:60px;">
+                            <li>图片编号:<span id="image_id">{{item.image_id}}</span></li>
+                            <li>上传时间:<span id="timestamp">{{item.upd_time}}</span></li>
+                            <li><a href="" class="fr margin_lr_10px" onclick="removeImage({{item.image_id}})">删除</a></li>
+                        </ul>
+                    </li>
+                    {{/each}}
+                    </script>
+                    
+                    <script type="text/html" id="image_item">
+                    <li id="image_detail">
+                        <div class="fl" id="pimg_{{img_id}}"><img src="{{img_src}}" alt="img1" style="width: 100%;height: 100%;"></div> 
+                        <ul style="margin-left:60px;">
+                            <li>图片编号:<span id="image_id">{{img_id}}</span></li>
+                            <li>上传时间:<span id="timestamp">{{img_time}}</span></li>
+                            <li><a href="" class="fr margin_lr_10px" onclick="removeImage({{img_id}})">删除</a></li>                            
+                        </ul>
+                    </li>
+                    </script>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

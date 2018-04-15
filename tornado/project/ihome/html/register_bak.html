@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <title>注册</title>
+    <style type="text/css">
+        *{
+            margin:0;
+            padding: 0;
+        }
+
+        .box{
+            width: 300px;
+            height: 500px;
+            margin:10px auto;
+            border:1px solid;
+        }
+
+        form{
+            margin: 70px auto;
+        }
+
+        .form_item {
+            width: 256px;
+            margin: 5px 20px 5px 20px;    
+            height: 40px;
+            line-height: 40px;
+            text-align: 5px;
+            font-size: 18px;
+        }
+
+        .form_item .verify_input{
+            height: 100%;
+            width: 70%;
+            font-size: 18px;
+        }
+
+        .form_item .verify_img{
+            width: 30%;
+        }
+
+        .fl{
+            float: left;
+        }
+
+        .fr{
+            float: right;
+        }
+
+</style>
+</head>
+<script type="text/javascript" src="/static/jquery-1.12.4.min.js"></script>
+<script type="text/javascript">
+    function getCookie(name){      
+        var r=document.cookie.match("\\b"+name+"=([^;]*)\\b")
+        return r?r[1]:undefined
+    }
+
+    function xsrfPost(){
+        var xsrf=getCookie("_xsrf")
+
+        var phone=$('form input').eq(0).val()
+        var password=$('form input').eq(3).val()
+        //alert("_xsrf="+xsrf+"&user_phone="+phone+"&user_password="+password);
+        $.post("/register","_xsrf="+xsrf+"&user_phone="+phone+"&user_password="+password,function(data){
+            if(data.ret == '1'){
+                alert('注册成功!');
+                window.navigate('/')
+            }
+            else
+                alert('注册失败！稍后重试!')
+        })
+    }
+
+    $(function(){
+        $('#submit').click(function(){
+          xsrfPost();  
+        });
+    })
+
+</script>
+<body>
+    <div class="box">
+        <form method="post"> 
+            <input type="text" name="phone" class="form_item" placeholder="手机号码">
+            <div class="form_item"><input type="text" name="verify_input" class="verify_input" placeholder="验证码"><img src="#"  class="verify_img" ></div> 
+            <input type="text" name="message_verify" class="form_item" placeholder="短信验证码">
+            <input type="text" name="password" class="form_item" placeholder="密码">
+            <input type="text" name="confirm_pwd" class="form_item" placeholder="确认密码">
+            <input type="button" value="立即注册" class="form_item" id='submit'> 
+        </form>
+        <div ><a href="javascript;:" class="fr" style="margin-right: 20px;">已有账号？立即登陆</a></div>
+    </div>
+</body>
+</html>

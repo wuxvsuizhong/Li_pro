@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>房屋信息</title>
+    <style type="text/css">
+        *{
+        margin:0;
+        padding: 0;
+        }
+
+        .item{
+        width: 500px;
+        height: 600px;
+        margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+{% for house in data.houses %}
+    <div class="item">
+        <table border="1" width="500px" class="box">
+        <tr>
+            <td height="300px" colspan="4"><img src="{{house.house_mig}}" alt="image"></td>
+        </tr>
+        <tr style="height: 24px;">
+            <td width="25%">{{house.house_name}}</td>
+            <td width="25%">{{house.price}}</td>
+            <td width="25%">{{house.owner_id}}</td>
+            <td width="25%">{{house.onerphone}}</td>
+        </tr>
+    </table>
+</div>
+{% end %}
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>房屋详情</title>
+    <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/static/js/template-web.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.form.min.js"></script>
+    <script type="text/javascript">
+        function getUrlArg(arg){
+            var url=window.location.search;
+            if(url != ""){
+                var val=url.match('.*?'+arg+'=(.*)?(\&|$)')[1];
+                return val;  
+            }
+            else
+                return "";
+        }
+
+
+        $(function(){
+            document.house_id=getUrlArg('house_id');
+            document.house_renter=getUrlArg('user_name');
+            document.house_owner=getUrlArg('house_owner');
+            getHouseDetail();
+        })
+
+        function scrollResize(){
+            // 整个页面高度
+            var h=$('.scroll_list').outerHeight(true);
+            // 当前窗口高度
+            var cur_win_h=$('.content').height();
+            // 滚动条长度
+            var scroll_bar_len=parseInt(cur_win_h/h*cur_win_h);            
+            $('.list_scroll_bar').css({height:scroll_bar_len,opacity:0.3});
+
+            console.log(h);
+            console.log(cur_win_h);
+            console.log(scroll_bar_len)
+
+            $('.list_scroll_bar').draggable({
+                axis:'y',
+                containment:'parent',
+                opacity:0.6,
+                drag:function(ev,ui){
+                    // 滚动单位像素对应内容应移动的像素
+                    var a=h/$('.list_scroll_box').height();
+                    $('.scroll_list').css({top:-ui.position.top*a});
+                }
+            });
+        }
+
+        
+
+        function getHouseDetail(){
+            var house_id=getUrlArg("house_id");
+            $.get('/gethousedetail',"house_id="+house_id,function(data){
+                // console.log(data);
+                if(data.ret == "1"){
+                    var house_data=JSON.parse(data.house_data);
+                    // var house_faci=JSON.parse(data.house_facility);
+                    var house_faci=data.house_facility;
+                    var faci_len=0;
+                    for(var key in house_faci) faci_len++;
+
+                    $('#scroll_list').html(template('house_detail',{house_info:house_data}));
+                    var tr_num=0;
+                    if(faci_len%2)
+                        tr_num=faci_len/2+1;
+                    else
+                        tr_num=faci_len/2;
+
+                    for(var i=0;i<tr_num;i++){
+                        $('.house_facility_table table').append('<tr><td></td><td></td></tr>');  
+                    }
+                    var tds=$('.house_facility_table table td');
+                    var i=0;
+                    var val='';
+                    for(var key in house_faci){
+                        val= house_faci[key]=="1"?'✔':'×';
+                        $(tds[i]).html(key+"<span class='fl'>"+val+"</span>");
+                        i++;
+                    }
+                    scrollResize();
+                }
+                else
+                    alert(data.msg);
+            })
+        }
+
+        function place_order(){
+            window.location='/html/pay_for.html?house_id='+document.house_id+"&house_renter="+document.user_name;
+        }
+    </script>
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css"> 
+</head>
+<body>
+    <div class="box">
+        <div class="navigate"><div style="width: 100%; text-align: center; margin-top:13px;">房屋详情</div></div>
+        <div class="content"> 
+            <div class="scroll_list" id="scroll_list">
+                <script type="text/html" id="house_detail">             
+                    <div class="img_box"><img src="/static/image/house.jpg" alt="image"></div>
+                    <ul>
+                        <li class="house_info_item">
+                            <ul class="owner_info">
+                                <li>{{house_info.owner_name}}的家</li>
+                                <li class="photo_show"><img src="{{house_info.user_photo}}" alt="photo"></li>
+                                <li>房东:{{house_info.owner_name}}}</li>
+                            </ul>
+                        </li>
+                        <li class="house_info_item">
+                            <ul class="adress_info">
+                                <li><h3>房屋地址</h3></li>
+                                <li>{{house_info.house_address}}</li>
+                            </ul>                            
+                        </li>
+                        <li class="house_info_item">
+                            <ul class="rent_house_info text_indent10">
+                                <li>出租{{house_info.rent_house_num}}间</li>
+                                <li>房屋面积{{house_info.house_area}}平</li>
+                                <li>房屋户型:{{house_info.house_type}}</li>
+                            </ul>
+                        </li>
+                        <li class="house_info_item text_indent10">宜住{{house_info.suit_persons}}人</li>
+                        <li class="house_info_item text_indent10">已出租次数:0次</li>
+                        <li class="house_info_item">
+                            <ul class="text_indent10">
+                                <li><h3>卧床配置</h3></li>
+                                <li>{{house_info.bed_cond}}</li>
+                            </ul>
+                        </li>
+                        <li class="house_info_item">
+                            <ul class="text_indent10">
+                                <li>最少入住天数<span class="fr span_margin_right10">{{house_info.least_days}}</span></li>
+                                <li>做多入住天数<span class="fr span_margin_right10">无限制</span></li>
+                            </ul>
+                        </li>
+                        <li class="house_info_item">
+                            <ul>
+                                <li><h3 style="text-align: center;height: 30px;line-height: 30px;">配置设施</h3></li>
+                                <li class="house_facility_table">
+                                    <table>
+                                    </table>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="house_info_item"><button value="" class="button" style="width: 100%; height: 30px;" id="upload_house_image" onclick="window.location='/html/upload_house_image.html?house_id={{house_info.house_id}}'">上传房源图片</button></li>
+                    </ul>  
+                </script>  
+                                                        
+            </div>
+            
+            
+
+            <div class="now_order">
+                <input type="button" value="立即预定" class="button pub_new_house" style="border-radius: 0;" onclick="place_order()">
+            </div>
+            <div class="list_scroll_box">
+                <div class="list_scroll_bar"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

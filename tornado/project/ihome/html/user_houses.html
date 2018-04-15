@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>我的房源</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css?v=1.00">  
+    <script type="text/javascript" src="/static/js/template-web.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="/static/js/myhouselist.js"></script>  
+</head>
+<body>
+    <div class="box">
+        <div class="navigate"></div>
+        <div class="content">
+            <ul class="house_list" id="house_list">
+                <script type="text/html" id="house_item">
+                <li class="pub_new_house"><a href="#">发布新房源</a></li>  
+                {{each houses as house}}          
+                <li class="house_item">
+                    <ul>
+                        <li class="house_item_header">房屋ID：<span>{{house.house_id}}</span>——房屋标题:<span>asdasd</span></li>
+                        <li class="house_item_detail">
+                            <div class="fl house_item_image"><img src="{{house.imgsrc}}" alt="image"></div>
+                            <div>
+                                <ul>
+                                    <li>位于:<span>{{house.house_address}}</span></li>
+                                    <li>价格:<span>{{house.house_price}}</span>元/月</samp></li>
+                                    <li>发布时间:<span>{{house.create_time}}</span></li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </li>            
+                {{/each}}
+                <li class="house_item"></li>
+                </script>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>我的订单</title>
+    <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-ui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css">
+    <script type="text/javascript">
+        function scroll_resize(){
+            /*-----------------滚动条-----------------*/
+            // 整个页面高度
+            var h=$('.scroll_list').outerHeight(true);
+            // 当前窗口高度
+            var cur_win_h=$('.content').height();
+            // 滚动条长度
+            var scroll_bar_len= h<=cur_win_h?0:parseInt(cur_win_h/h*cur_win_h);            
+            return;
+            $('.list_scroll_bar').css({height:scroll_bar_len});
+
+            console.log('h='+h);
+            console.log("cur_win_h="+cur_win_h);
+            console.log("scroll_bar_len"+scroll_bar_len)
+
+            $('.list_scroll_bar').draggable({
+                axis:'y',
+                containment:'parent',
+                opacity:0.6,
+                drag:function(ev,ui){
+                    // 滚动单位像素对应内容应移动的像素
+                    var a=h/$('.list_scroll_box').height();
+                    $('.scroll_list').css({top:-ui.position.top*a});
+                }
+            });
+        }
+
+        function getUrlArg(arg){
+            var url=window.location.search;
+            if(url != ""){
+                var val=url.match('.*?'+arg+'=(.*)?(\&|$)')[1];
+                return val;  
+            }
+            else
+                return "";
+        }
+
+
+
+        $(function(){
+            document.user_name=getUrlArg('user_name');
+            scroll_resize();
+        })
+    </script>
+</head>
+<body>
+    <div class="box">
+        <div class="navigate"></div>
+        <div class="content">
+            <div class="scroll_list">
+                <div class="part_box margin_lr_10px">
+                    <ul>
+                        <li><h3 class="text_indent10">房屋标题</h3></li>
+                        <li class="house_item_detail">
+                            <div class="fl house_item_image"><img src="" alt="image"></div>
+                            <div class="order_main">
+                                <ul>
+                                    <li>600元/月</li>
+                                    <li>下单时间:</li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li>
+                            <ul class="text_indent10">
+                                <li>押金数额</li>
+                                <li>房东</li>
+                                <li>房屋地址</li>
+                                <li>入住时间</li>
+                                <li>离开时间</li>
+                                <li>居住时长</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="part_box margin_lr_10px">                    
+                </div>
+            </div>
+            <div class="list_scroll_box">
+                <div class="list_scroll_bar"></div>
+            </div>
+        </div> 
+    </div>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <title>注册</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css">
+</style>
+</head>
+<script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript">
+    function getCookie(name){      
+        var r=document.cookie.match("\\b"+name+"=([^;]*)\\b")
+        return r?r[1]:undefined
+    }
+
+    function xsrfPost(){
+        var xsrf=getCookie("_xsrf")
+
+        var phone=$('form input').eq(0).val()
+        var password=$('form input').eq(3).val()
+        //alert("_xsrf="+xsrf+"&user_phone="+phone+"&user_password="+password);
+        $.post("/register","_xsrf="+xsrf+"&user_phone="+phone+"&user_password="+password,function(data){
+            if(data.ret == '1'){
+                alert('注册成功!');
+                window.location.replace('/html/login.html')
+            }
+            else
+                alert(data.msg);
+        })
+    }
+
+    $(function(){
+        $('#submit').click(function(){
+          xsrfPost();  
+        });
+    })
+
+</script>
+<body>
+    <div class="box">
+        <form method="post"> 
+            <input type="text" name="phone" class="form_item" placeholder="手机号码">
+            <div class="form_item"><input type="text" name="verify_input" class="verify_input" placeholder="验证码"><img src="#"  class="verify_img" ></div> 
+            <input type="text" name="message_verify" class="form_item" placeholder="短信验证码">
+            <input type="password" name="password" class="form_item" placeholder="密码">
+            <input type="password" name="confirm_pwd" class="form_item" placeholder="确认密码">
+            <input type="button" value="立即注册" class="form_item" id='submit'> 
+        </form>
+        <div ><a href="/html/login.html" class="fr" style="margin-right: 20px;">已有账号？立即登陆</a></div>
+    </div>
+</body>
+</html>
