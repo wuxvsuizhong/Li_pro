@@ -1,0 +1,80 @@
+{% extends 'base_foot.html' %}
+
+{% block head %}
+    {% block head_user %}
+    <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var uname = "{{ uname|default:'' }}";
+            if(uname != '') {
+                $('.login_info em').html(uname);
+                $('.login_info').show();
+                $('.login_btn').hide();
+            }
+        })
+    </script>
+    {% endblock head_user %}
+    {% block afterhead_user %}
+    {% endblock afterhead_user %}
+{% endblock head %}
+
+
+{% block body %}
+
+    {% block body_head %}
+        <div class="header_con">
+		<div class="header">
+			<div class="welcome fl">欢迎来到天天生鲜!</div>
+			<div class="fr">
+				<div class="login_info fl">
+					欢迎您：<em>{{ uname }}</em>
+                    <span>|</span>
+                    <a href="/user/logout/" style="text-align: center">退出</a>
+				</div>
+				<div class="login_btn fl">
+					<a href="/user/login/">登录</a>
+					<span>|</span>
+					<a href="/user/register/">注册</a>
+				</div>
+				<div class="user_link fl">
+					<span>|</span>
+					<a href="/user/info/">用户中心</a>
+					<span>|</span>
+					<a href="/cart/">我的购物车</a>
+					<span>|</span>
+					<a href="/user/user_center_order/">我的订单</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+    {% block search_and_cart %}
+    <script type="text/javascript">
+    $(function () {
+        if("{{ uname }}"){
+            $.get('/cart/get_count/',function (dic) {
+                $('#show_count').text(dic.count);
+            })
+        }
+    });
+
+    </script>
+	<div class="search_bar clearfix">
+		<a href="/" class="logo fl"><img src="/static/images/logo.png"></a>
+		<div class="search_con fl">
+			<input type="text" class="input_text fl" name="" placeholder="搜索商品">
+			<input type="button" class="input_btn fr" name="" value="搜索">
+		</div>
+		<div class="guest_cart fr">
+			<a href="/cart/" class="cart_name fl">我的购物车</a>
+			<div class="goods_count fl" id="show_count">0</div>
+		</div>
+	</div>
+    {% endblock search_and_cart %}
+    {% endblock body_head %}
+
+    {% block body_content %}
+    {% endblock body_content %}
+
+{% endblock body %}

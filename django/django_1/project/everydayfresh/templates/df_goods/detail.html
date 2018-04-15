@@ -1,0 +1,138 @@
+{% extends 'df_goods/base.html' %}
+
+{% block afterhead_user %}
+    <script type="text/javascript">
+        $(function () {
+            var count = parseInt($('#num_show').val());
+            var price=null;
+            var totla=null;
+             $('#num_addone').click(function () {
+                 count+=1;
+                 calc()
+             });
+
+             $('#num_minusone').click(function () {
+                 if(count -1 < 0)
+                     return;
+                 count-=1;
+                 calc()
+             });
+
+             function calc() {
+                $('#num_show').val(count);
+                price = parseFloat($('.show_pirze em').text());
+                totla = price*count;
+                $('.total em').text(totla.toFixed(2)+'元')
+            }
+
+            $('#add_cart').click(function () {
+                alert('/cart/add_{{ goodsdetail.id }}_'+$('#num_show').val());
+                $.get('/cart/add_{{ goodsdetail.id }}_'+$('#num_show').val(),function (dic) {
+                    return;
+                })
+            });
+
+             $('.buy_btn').click(function () {
+                 var url = "/order/buynow_{{ goodsdetail.id }}_"+$('#num_show').val()+"/";
+                 alert(url);
+                 $(this).attr('href',url);
+             })
+        })
+
+
+
+    </script>
+{% endblock afterhead_user %}
+
+{% block body_afternav %}
+	<div class="breadcrumb">
+		<a href="#">全部分类</a>
+		<span>></span>
+		<a href="/list_{{ typeid }}_1_1">{{ goodstype }}</a>
+		<span>></span>
+		<a href="#">商品详情</a>
+	</div>
+
+	<div class="goods_detail_con clearfix">
+		<div class="goods_detail_pic fl"><img src="/static/{{ goodsdetail.gpic }}"></div>
+
+		<div class="goods_detail_list fr">
+			<h3>{{ goodsdetail.gtitle }}</h3>
+			<p>{{ goodsdetail.brief }}</p>
+			<div class="prize_bar">
+				<span class="show_pirze">¥<em>{{ goodsdetail.gprice }}</em></span>
+				<span class="show_unit">单  位：{{ goodsdetail.gunit }}</span>
+			</div>
+			<div class="goods_num clearfix">
+				<div class="num_name fl">数 量：</div>
+				<div class="num_add fl">
+					<input type="text" class="num_show fl" value="1" id="num_show">
+					<a href="javascript:;" class="add fr" id="num_addone">+</a>
+					<a href="javascript:;" class="minus fr" id="num_minusone">-</a>
+				</div> 
+			</div>
+			<div class="total">总价：<em>{{ goodsdetail.gprice }}</em></div>
+			<div class="operate_btn">
+				<a href="javascript:;"   class="buy_btn">立即购买</a>
+				<a href="javascript:;" class="add_cart" id="add_cart">加入购物车</a>				
+			</div>
+		</div>
+	</div>
+
+	<div class="main_wrap clearfix">
+		<div class="l_wrap fl clearfix">
+			<div class="new_goods">
+				<h3>新品推荐</h3>
+				<ul>
+                    {% for each in news %}
+					<li>
+						<a href="/detail_{{ each.id }}"><img src="/static/{{ each.gpic }}"></a>
+						<h4><a href="/detail_{{ each.id }}/">{{ each.gtitle }}</a></h4>
+						<div class="prize">￥{{ each.gprice }}</div>
+					</li>
+                    {% endfor %}
+				</ul>
+			</div>
+		</div>
+
+		<div class="r_wrap fr clearfix">
+			<ul class="detail_tab clearfix">
+				<li class="active">商品介绍</li>
+				<li>评论</li>
+			</ul>
+
+			<div class="tab_content">
+				<dl>
+					<dt>商品详情：</dt>
+					<dd>{{ goodsdetail.gdetail|safe }} </dd>
+				</dl>
+			</div>
+
+		</div>
+	</div>
+{% endblock body_afternav %}
+
+{% block foot_bottom %}
+	<div class="add_jump"></div>
+
+	<script type="text/javascript">
+
+		$('#add_cart').stop().click(function(){
+		    var $add_x = $('#add_cart').offset().top;
+		    var $add_y = $('#add_cart').offset().left;
+
+		    var $to_x = $('#show_count').offset().top;
+		    var $to_y = $('#show_count').offset().left;
+
+		    $(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'});
+			$(".add_jump").animate({
+				'left': $to_y+7,
+				'top': $to_x+7},
+				"fast", function() {
+					$(".add_jump").fadeOut('fast',function(){
+						$('#show_count').html(parseInt($('#show_count').text())+parseInt($('#num_show').val()));
+					});
+			});
+		})
+	</script>
+{% endblock foot_bottom %}
