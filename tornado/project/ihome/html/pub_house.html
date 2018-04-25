@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>发布房源</title>
+    <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.form.min.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            // 整个页面高度
+            var h=$('.scroll_content').outerHeight(true);
+            // 当前窗口高度
+            var cur_win_h=$('.content').height();
+            // 滚动条长度
+            var scroll_bar_len=parseInt(cur_win_h/h*cur_win_h);            
+            $('.pub_scroll_bar').css({height:scroll_bar_len});
+
+            console.log(h);
+            console.log(cur_win_h);
+            console.log(scroll_bar_len);
+
+
+            $('.pub_scroll_bar').draggable({
+                axis:'y',
+                containment:'parent',
+                opacity:0.6,
+                drag:function(ev,ui){
+                    // 滚动单位像素对应内容应移动的像素
+                    var a=h/$('.pub_scroll_box').height();
+                    $('.scroll_content').css({top:-ui.position.top*a});
+                }
+            });
+        })
+
+        function getCookie(name){      
+            var r=document.cookie.match("\\b"+name+"=([^;]*)\\b")
+            return r?r[1]:undefined
+        }
+
+        function getUserName(){
+            var url=window.location.search;
+            var user_name=url.match('.*?user_name=(.*)?(\&|$)')[1];
+            return user_name;            
+        }
+
+
+        $(document).ready(function(){
+            $('#pub_form').submit(function(e){
+                e.preventDefault();
+                var options={
+                    url:"/pubnewhouse"+'?user_name='+getUserName(),
+                    type:"POST",
+                    headers:{
+                        "X-XSRFTOKEN":getCookie('_xsrf'),
+                    },
+                    success:function(data){
+                        if("1" == data.ret){
+                            alert("发布成功！");
+                        }
+                        else{
+                            alert("提交失败!请稍后重试！");
+                        }
+                    }
+                }
+                $(this).ajaxSubmit(options);
+            })
+        })        
+    </script>
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css">    
+</head>
+<body>
+    <div class="box">
+        <div class="navigate"></div>
+        <div class="content">
+            <form class="scroll_content" method="post" id="pub_form">
+                <div class="part_box">
+                    <ul>
+                        <li class="pub_box_header">基本信息</li>
+                        <li class="pub_box_content" id="house_essential">
+                            <ul>
+                                <li class="pub_box_content_item">
+                                    <ul>
+                                        <li><h3>房屋标题</h3></li>
+                                        <li><input type="text" name="house_breif"></li>
+                                    </ul>
+                                </li>
+                                <li class="pub_box_content_item">
+                                    <ul>
+                                        <li><h3>租金</h3></li>
+                                        <li><input type="text" name="house_price"></li>
+                                    </ul>
+                                </li>
+                                <li class="pub_box_content_item">
+                                    <ul>
+                                        <li><h3>所在地区</h3></li>
+                                        <li><input type="text" name="house_on"></li>
+                                    </ul>
+                                </li>
+                                <li class="pub_box_content_item">
+                                    <ul>
+                                        <li><h3>详细地址</h3></li>
+                                        <li><textarea class="detail_adress" name="detail_address"></textarea></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="part_box">
+                    <ul>
+                        <li class="pub_box_header">详细信息</li>
+                        <li class="pub_box_content" id="house_detail">
+                            <ul>
+                                <li class="pub_box_content_item">
+                                    <ul>
+                                        <li><h3>出租房间数目</h3></li>
+                                        <li><input type="text" name="rent_house_num"></li>
+                                    </ul>
+                                </li>
+                                <li class="pub_box_content_item">
+                                    <ul>
+                                        <li><h3>房屋面积</h3></li>
+                                        <li><input type="text" name="house_squre"></li>
+                                    </ul>
+                                </li>
+                                <li class="pub_box_content_item">
+                                    <ul>
+                                        <li><h3>户型描述</h3></li>
+                                        <li><input type="text" name="house_type"></li>
+                                    </ul>
+                                </li>
+                                <li class="pub_box_content_item">
+                                    <ul>
+                                        <li><h3>宜住人数</h3></li>
+                                        <li><input type="text" name="siut_persons"></li>
+                                    </ul>
+                                </li>
+                                <li class="pub_box_content_item">
+                                    <ul>
+                                        <li><h3>卧床配置</h3></li>
+                                        <li><input type="text" name="bed_type"></li>
+                                    </ul>
+                                </li>
+                                <li class="pub_box_content_item">
+                                    <ul>
+                                        <li><h3>押金数额</h3></li>
+                                        <li><input type="text" name="deposite"></li>
+                                    </ul>
+                                </li>
+
+                                <li class="pub_box_content_item">
+                                    <ul>
+                                        <li><h3>最少入住天数</h3></li>
+                                        <li><input type="text" name="short_time"></li>
+                                    </ul>
+                                </li>
+                                <li class="pub_box_content_item">
+                                    <ul>
+                                        <li><h3>最多入住天数</h3></li>
+                                        <li><input type="text" name="long_time"></li>
+                                    </ul>
+                                </li>
+
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="part_box">
+                    <ul>
+                        <li class="pub_box_header">配套设施</li>
+                        <li class="pub_box_cond">
+                            <table class="cond_table">
+                                <tr>
+                                    <td><input type="checkbox" name="wifi" value="1"><label>无线网络</label></td>
+                                    <td><input type="checkbox" name="hot_water" value="1"><label>热水淋浴</label></td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" name="air_condition" value="1"><label>空调</label></td>
+                                    <td><input type="checkbox" name="air_warmer" value="1"><label>暖气</label></td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" name="allow_smoke" value="1"><label>允许吸烟</label></td>
+                                    <td><input type="checkbox" name="water_facility" value="1"><label>饮水设备</label></td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" name="toothbrush" value="1"><label>牙具</label></td>
+                                    <td><input type="checkbox" name="soap" value="1"><label>香皂</label></td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" name="slippers" value="1"><label>拖鞋</label></td>
+                                    <td><input type="checkbox" name="toilte_paper" value="1"><label>手纸</label></td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" name="towel" value="1"><label>毛巾</label></td>
+                                    <td><input type="checkbox" name="bath_liquid" value="1"><label>沐浴露、洗发露</label></td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" name="air_condition" value="1"><label>冰箱</label></td>
+                                    <td><input type="checkbox" name="washing_machine" value="1"><label>洗衣机</label></td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" name="left" value="1"><label>电梯</label></td>
+                                    <td><input type="checkbox" name="allow_cook" value="1"><label>允许做饭</label></td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" name="" value="1"><label>允许带宠物</label></td>
+                                    <td><input type="checkbox" name="allow_party" value="1"><label>允许聚会</label></td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" name="guard_sys" value="1"><label>门禁系统</label></td>
+                                    <td><input type="checkbox" name="parking_pos" value="1"><label>停车位</label></td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" name="wired_network" value="1"><label>有线网络</label></td>
+                                    <td><input type="checkbox" name="tv" value="1"><label>电视</label></td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" name="bathtub" value="1"><label>浴缸</label></td>
+                                </tr>
+                            </table>
+                        </li>
+                    </ul>
+                </div>
+
+                    <input type="submit" value="发布房源信息" class="button pub_new_house">
+            </form>
+            <div class="pub_scroll_box">
+                <div class="pub_scroll_bar"></div>
+            </div>
+        </div>       
+    </div>
+</body>
+</html>

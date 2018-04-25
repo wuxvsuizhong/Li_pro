@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <style type="text/css">
+    </style>    
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css"> 
+    <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript">
+        function getCookie(name){      
+           var r=document.cookie.match("\\b"+name+"=([^;]*)\\b")
+           return r?r[1]:undefined
+        }
+        function getUrlArg(arg){
+            var url=window.location.search;
+            if(url != ""){
+                var val=url.match('.*?'+arg+'=(.*)?(\&|$)')[1];
+                return val;  
+            }
+            else
+                return "";
+        }
+
+        function xsrfPost(){
+            var xsrf=getCookie("_xsrf");
+            var session_id=getCookie("session_id");
+            var init_session=document.session;
+
+            $.post("/check_login","_xsrf="+xsrf+"&session_id="+session_id+"&user_phone="+getUrlArg("user_phone"),function(data){
+                if(data.ret == "1"){
+                    $('#user_info').text(data.user_name);
+                    $('#user_info').attr('href','/html/user_info.html?user_name='+data.user_name);
+                }
+                else{
+                    // alert("用户状态获取失败，请稍后重试!");
+                    $('#user_info').text("未登录");
+                    $('#user_info').attr('href','/html/login.html');
+                }
+            })
+       }
+        
+        $(function(){//页面加载即将完成时执行的操作
+            xsrfPost(); //获取用户信息
+            getAreaInfo(610100); //获取区域信息           
+           
+        });
+        
+
+        function getAreaInfo(data){
+            var parent_area_id=data;
+            $.get('/getareainfo',{"parent_id":parent_area_id},function(data){
+                console.log('getAreaInfo');
+                if(data.ret == "1"){
+                    var area_data=JSON.parse(data.area_data);
+                    $.each(area_data,function(index,item){
+                        $("#city").append('<option value='+item.area_num+'>'+item.area_name+'</option>');
+                    })
+                }
+                else{
+                    alert(data.msg);
+                }
+            })
+        }
+
+    </script>
+</head>
+<body>
+    <div class="box">
+        <div class="navigate">
+            <div  style="height: 100%; width:97%; margin-top: 14px;"><a id="user_info"  class="fr"></a></div>
+        </div>                       
+        <div class="img_box"><img src="/static/image/house.jpg" alt="image" class="img"></div>
+        <div class="content" style="top:350px;">            
+            <select class="form_item" style="margin-left:10px;" id="city" onchange="javascript:;">
+                <option value="">选择城区</option>
+            </select>
+            <select class="form_item" style="margin-left:10px;" id="price" onchange="javascript:;">
+                <option value="">价格区间</option>
+            </select>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="/static/js/getCurCookie.js"></script>
+</html>

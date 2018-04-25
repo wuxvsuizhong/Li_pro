@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/static/booktest/jquery-1.12.4.min.js"></script>
+    <script>
+      $(function () {
+          //查询省
+          $.get('/area/0/',function (dic) {
+              $.each(dic.data,function (index,item) {
+                  $('#pro').append('<option value='+ item[1]+'>'+item[0]+'</option>');
+              });
+          })
+
+          $('#pro').change(function(){
+             $.get('/city/'+$(this).val()+'/',function(city_dic){
+                $('#city').empty().append('<option value="">请选择市</option>');
+                $('#dis').empty().append('<option value="">请选择区</option>');
+                $.each(city_dic.data,function(index,item){
+                    $('#city').append('<option value='+ item[1]+'>'+item[0]+'</option>')
+                })
+             })
+          });
+
+          $('#city').change(function(){
+             $.get('/city/'+$(this).val()+'/',function(dis_dic){
+                $('#dis').empty().append('<option value="">请选择区</option>')
+                $.each(dis_dic.data,function(index,item){
+                    $('#dis').append('<option value='+ item[1]+'>'+item[0]+'</option>')
+                })
+             })
+          });
+      });
+    </script>
+</head>
+<body>
+<select id="pro">
+    <option value="">请选择省</option>
+</select>
+<select id="city">
+    <option value="">请选择市</option>
+</select>
+<select id="dis">
+    <option value="">请选择区</option>
+</select>
+</body>
+</html>

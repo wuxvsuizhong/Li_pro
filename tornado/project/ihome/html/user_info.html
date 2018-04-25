@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户中心</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css">
+    <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript">
+        // function getCookie(name){      
+        //     var r=document.cookie.match("\\b"+name+"=([^;]*)\\b")
+        //     return r?r[1]:undefined
+        // }
+        function link_edit(link,decorater){
+            var href=$(link).attr('href');
+            return $(link).attr('href',href+decorater);
+        }
+
+        $(function(){
+            $.get("/getuserinfo",function(data){
+                if(data.ret == "1"){
+                    $('#user_photo').attr('src',data.user_photo);
+                    $('#user_name').html(data.user_name)
+                    $('#user_phone').html(data.user_phone);                
+
+                    var decorate='?user_name='+data.user_name;
+
+                    link_list=$('.person_source li a');
+                    for(var i=0;i<link_list.length;i++){
+                        link_edit(link_list[i],decorate);
+                    }
+
+                    link_edit($('#info_revise'),decorate);
+                }
+                else{
+                    alert(data.msg);
+                }
+            });
+
+            $('#exit').click(function(){
+                $.get("/userlogout",function(data){
+                    if(data.ret == "1"){
+                        window.location.replace('/html/login.html');
+                    }
+                });
+            });
+        }) 
+    </script>
+</head>
+<body>
+    <div class="box view">
+        <div class="navigate"><div style="width: 100%; text-align: center; margin-top:13px;">用户中心</div></div>
+        <div class="content" style="top: 50px;">
+            <ul>
+                <li>
+                    <ul class="person_detail">
+                        <li class="header"><span>个人信息</span><a class="fr" href="/html/info_revise.html" style="margin-right: 10px" id="info_revise">修改</a></li>
+                        <li class="con2">
+                            <img src="" class="user_photo fl" id="user_photo">
+                            <ul>
+                                <li style="text-indent: 10px">用户名:<span id="user_name"></span></li>
+                                <li style="text-indent: 10px">手机号:<span id="user_phone"></span></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <ul class="person_source">
+                        <li><a href="" id="person_order">我的订单</a></li>
+                        <li><a href="" id="realname_ervify">实名认证</a></li>
+                        <li><a href="/html/house_list.html" id="person_houses">我的房源</a></li>
+                        <li><a href="/html/order_list.html" id="custom_order">客户订单</a></li>
+                        <li><a href="/html/pub_house.html" id="pub_house">发布房源</a></li>
+                        <li><a href="javascript:;" id="exit">退出</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

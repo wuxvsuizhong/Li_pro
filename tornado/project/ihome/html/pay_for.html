@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>支付</title>
+    <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.form.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css">
+    <script type="text/javascript">
+        function getCookie(name){      
+            var r=document.cookie.match("\\b"+name+"=([^;]*)\\b")
+            return r?r[1]:undefined
+        }
+
+        function getUrlArg(arg){
+            var url=window.location.search;
+            if(url != ""){
+                var val=url.match('.*?'+arg+'=(.*)?(\&|$)')[1];
+                return val;  
+            }
+            else
+                return "";
+        }
+
+        function getHouseBreif(house_id){
+            // 页面初始化
+            $.get('/gethousebreif?house_id='+house_id,function(data){
+                if("1" == data.ret){
+                    $('.pay_house_image img').attr("src",data.image_path);
+                    $('#pay_house_price').text('共计:'+(parseFloat(data.house_price)*100+parseFloat(data.deposite)*100)/100);
+                    $('#rent').text("其中房租"+data.house_price+'元 ');
+                    $('#deposite').text('押金数额'+data.deposite+'元');
+                    $('#pay_house_address p').text(data.house_address);
+
+                }
+                else{
+                    alert(data.msg);
+                }
+            })
+        }
+
+
+
+        $(document).ready(function(){
+            var house_id=getUrlArg('house_id');
+            var house_owner=getUrlArg('house_owner');
+            $('#order_house_id').attr('value',house_id);
+            $('#order_house_owner').attr('value',house_owner);
+            getHouseBreif(house_id);
+
+            $('#place_order_form').submit(function(e){
+                e.preventDefault();
+                options={
+                    url:"/placeorder",
+                    type:"POST",
+                    headers:{
+                        "X-XSRFTOKEN":getCookie('_xsrf'),
+                    },
+                    success:function(data){
+                        if("1" == "ret"){
+                            alert("预定成功!");
+                        }
+                        else{
+                            alert(data.msg);
+                        }
+                    }
+                };
+                $(this).ajaxSubmit();
+            })
+        })
+    </script>
+</head>
+<body>
+    <div class="box">
+        <div class="navigate"></div>
+        <div class="content">
+            <form method="post" id="place_order_form">
+                <div class="pay_detail margin_lr_10px margin_tb_10px ">
+                    <ul class="margin_lr_10px margin_tb_10px">
+                        <li>
+                            <div class="fl pay_house_image"><img src="" alt="image"></div>
+                            <div class="pay_way text_indent10">
+                                <ul>
+                                    <li id="pay_house_price"><span id="rent"></span><span id="deposite"></span></li>
+                                    <li id="pay_house_address"><p></p></li>
+                                    <input type="hidden" name="house_id" id="order_house_id">
+                                    <input type="hidden" name="house_owner" id="order_house_owner">
+                                </ul>
+                            </div>
+                        </li>
+                        <div id="choose_pay_way">
+                            <li><input type="radio" name="pay_style">微信支付</li>
+                            <li><input type="radio" name="pay_style">支付宝</li>
+                            <li><input type="radio" name="pay_style">银联</li>
+                        </div>
+                    </ul>
+                </div>
+                <div class="margin_lr_10px margin_tb_10px">
+                    <input type="submit" value="立即支付" id="order_pay" class="button">
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,167 @@
+{% extends 'base_kit.html' %}
+
+{% block afterhead_user %}
+<script type="text/javascript">
+    $(function () {
+        $('.cart_list_td #ischoose').attr('checked',true);
+        $('.cart_list_td #price').each(function () {
+            var price = parseFloat($(this).children().text());
+            var count = parseInt($(this).next().children().children().eq(1).val());
+            var sum = price*count;
+            $(this).next().next().children().text(sum.toFixed(2));
+            settle();
+
+        });
+
+        $('.cart_list_td #num_addone').click(function(){
+            var price = parseFloat($(this).parent().parent().prev().children().text());
+            var count = parseInt($(this).next().val());
+            count+=1;
+            $(this).next().val(count);
+            var sum = price*count;
+            $(this).parent().parent().next().children().text(sum.toFixed(2));
+            settle();
+            var url='/cart/change_count_' + $(this).parent().parent().parent().attr('id') + '_' + count;
+            $.get(url,function (dic) {
+
+            });
+        });
+
+        $('.cart_list_td #num_minusone').click(function(){
+            var price = parseFloat($(this).parent().parent().prev().children().text());
+            var count = parseInt($(this).prev().val());
+
+            if(count-1 <= 0)
+                return;
+            count-=1;
+            $(this).prev().val(count);
+            var sum = price*count;
+            $(this).parent().parent().next().children().text(sum.toFixed(2));
+            settle();
+            var url='/cart/change_count_' + $(this).parent().parent().parent().attr('id') + '_' + count;
+            $.get(url,function (dic) {
+
+            });
+        });
+
+        function settle() {
+            var count=0;
+            var total=0;
+            $('.cart_list_td #ischoose').each(function () {
+                 if($(this).prop('checked')){
+                     total=total+parseFloat($(this).parent().parent().children().eq(6).children().text());
+                     console.log(total);
+                     count=count+1;
+                 }
+            });
+
+            $('.settlements .col03 em').text(total.toFixed(2));
+            $('.settlements .col03 b').text(count);
+            $('.total_count em').text(count);
+        }
+
+        $('.settlements .col01 input').change(function () {
+            if($('.settlements .col01 input').prop('checked')){
+                $('.cart_list_td #ischoose').each(function () {
+                    if(!$(this).prop('checked'))
+                        $(this).prop('checked',"checked")
+                })
+            }
+            settle();
+        });
+
+        $('.cart_list_td #ischoose').change(function () {
+            settle();
+        });
+
+        $('.cart_list_td .col08 a').click(function () {
+                del=confirm('确认要删除吗？');
+                var id=$(this).parent().parent().attr('id');
+                if(del) {
+                    $.get('/cart/delete_goods_' + id + '/', function (data) {
+                        if(data.data == '1'){
+                            $('.cart_list_td').remove('#'+id);
+                            settle();
+                        }
+                    });
+                }
+        });
+
+        $('.settlements .col04 a').click(function () {
+            var chooselist = [];
+            $('.cart_list_td').each(function() {
+                if($(this).children().find('input').prop('checked'))
+                    chooselist.push($(this).attr('id'));
+                }
+            );
+            var choosestr = chooselist.join(',');
+{#            alert(choosestr);#}
+            window.location.href='/order/place_order/?choosestr='+choosestr;
+        });
+
+        console.log({{totalcount}});
+    })
+
+
+
+</script>
+{% endblock afterhead_user %}
+
+
+{% block body_content %}
+	<div class="total_count">全部商品<em>{{ totalcount }}</em>件</div>
+	<ul class="cart_list_th clearfix">
+		<li class="col01">商品名称</li>
+		<li class="col02">商品单位</li>
+		<li class="col03">商品价格</li>
+		<li class="col04">数量</li>
+		<li class="col05">小计</li>
+		<li class="col06">操作</li>
+	</ul>
+    {% for each in boughtlist %}
+    <ul class="cart_list_td clearfix" id="{{ each.goodsinfo.id }}">
+		<li class="col01"><input type="checkbox" name="" id="ischoose"></li>
+		<li class="col02"><img src="/static/{{ each.goodsinfo.gpic }}"></li>
+		<li class="col03">{{ each.goodsinfo.gtitle }}<br><em>{{ each.goodsinfo.gprice }}元/{{ each.goodsinfo.gunit }}</em></li>
+		<li class="col04">{{ each.goodsinfo.gunit }}</li>
+		<li class="col05" id="price"><span>{{ each.goodsinfo.gprice }}</span>元</li>
+		<li class="col06">
+			<div class="num_add">
+				<a href="javascript:;" class="add fl" id="num_addone">+</a>
+				<input type="text" class="num_show fl" value={{ each.count }} id="num_show">
+				<a href="javascript:;" class="minus fl" id="num_minusone">-</a>
+			</div>
+		</li>
+		<li class="col07" id="total"><span></span>元</li>
+		<li class="col08"><a href="javascript:;" >删除</a></li>
+	</ul>
+    {% endfor %}
+
+	<ul class="settlements">
+		<li class="col01"><input type="checkbox" name="" checked></li>
+		<li class="col02">全选</li>
+		<li class="col03">合计(不含运费)：<span>¥</span><em>0</em><br>共计<b>{{totalcount}}</b>件商品</li>
+        {% if totalcount == 0 %}
+        <li class="col04"><a href="/index/">去逛逛</a></li>
+        {%else%}
+		<li class="col04"><a href="javascript:;">去结算</a></li>
+        {%endif%}
+	</ul>
+{% endblock body_content %}
+
+{% block foot_content %}
+	<div class="footer">
+		<div class="foot_link">
+			<a href="#">关于我们</a>
+			<span>|</span>
+			<a href="#">联系我们</a>
+			<span>|</span>
+			<a href="#">招聘人才</a>
+			<span>|</span>
+			<a href="#">友情链接</a>
+		</div>
+		<p>CopyRight © 2016 北京天天生鲜信息技术有限公司 All Rights Reserved</p>
+		<p>电话：010-****888    京ICP备*******8号</p>
+	</div>
+
+{% endblock foot_content %}

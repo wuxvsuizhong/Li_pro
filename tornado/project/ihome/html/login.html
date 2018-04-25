@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css">
+    <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript">
+       function getCookie(name){      
+           var r=document.cookie.match("\\b"+name+"=([^;]*)\\b")
+           return r?r[1]:undefined
+       }
+
+       function xsrfPost(){
+           var xsrf=getCookie("_xsrf")
+
+           var phone=$('form input').eq(0).val()
+           var password=$('form input').eq(1).val()
+           //alert("_xsrf="+xsrf+"&user_phone="+phone+"&user_password="+password);
+           $.post("/login","_xsrf="+xsrf+"&user_phone="+phone+"&user_password="+password,function(data){
+               ret=data.ret;
+               
+              switch (ret)
+              {
+                case "0":
+                  alert("会话已过期，请重新登录!");
+                  window.location.reload();
+                  break    
+                case "1":
+                  alert("登录成功！");
+                  window.location.replace('/html/index.html?user_phone='+phone);
+                  break;
+                case "2":
+                  alert("密码错误!");
+                  window.location.replace('/html/login.html');
+                  break;
+                default:
+                  alert(data.err_msg);
+                  break;                
+              }
+           })
+       }
+
+       $(function(){
+            $('#submit').click(function(){
+                xsrfPost();
+            })
+       })
+
+    </script>
+</head>
+<body>
+    <div class="box">
+        <form method="post">
+            <input type="text" name="user_phone" class="form_item" placeholder="手机号码">
+            <input type="password" name="user_password" class="form_item" placeholder="输入密码">
+            <input type="button" value="立即登录" class="form_item button" id="submit">
+        </form>
+    </div>
+</body>
+</html>

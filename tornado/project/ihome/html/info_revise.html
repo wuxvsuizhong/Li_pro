@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户信息修改</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css">
+    <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>    
+    <script type="text/javascript" src="/static/js/jquery.form.min.js"></script>
+    
+    <script type="text/javascript">
+        function getCookie(name){      
+           var r=document.cookie.match("\\b"+name+"=([^;]*)\\b")
+           return r?r[1]:undefined
+       }
+
+       $(document).ready(function(){ 
+            $.get("/getuserinfo",function(data){
+                if(data.ret == "1"){
+                    $('#user_photo').attr('src',data.user_photo);
+                    // $('#user_name').html(data.user_name)
+                    // $('#user_phone').html(data.user_phone);
+                }
+                else{
+                    alert(data.msg);
+                }
+            });
+
+
+
+            //上传头像，利用jquery拦截表单的submit       
+            $("#photo_submit").submit(function(e){
+                alert("submit");
+                e.preventDefault();
+                var options={
+                    url:"/putphoto/revise_photo",
+                    type:"POST",
+                    headers:{
+                        "X-XSRFTOKEN":getCookie('_xsrf'),
+                    },
+                    success:function(data){
+                        if("1" == data.ret){
+                            $('#user_photo').attr('src',data.url);
+                        }
+                    }
+                };
+                $(this).ajaxSubmit(options);
+            });
+       });
+        
+    </script>
+</head>
+<body>
+    <div class="box view">
+        <div class="navigate"><div style="width: 100%; text-align: center; margin-top:13px;">个人信息</div></div>
+        <div class="content" style="top: 50px;">
+            <ul class="revise_photo">
+                <li>头像</li>
+                <li class="change_photo">
+                    <img src="" alt="image" id="user_photo">
+                    <form method="post" enctype="multipart/form-data"  id="photo_submit">
+                        <h3>选择头像</h3>
+                        <input type="file" name="choose_photo">
+                        <input type="hidden" name="image_type" value="user_photo">
+                        <input type="submit" value="上传" class="button">
+                    </form>
+                </li>
+            </ul>
+            
+            <ul class="revise_name">
+                <li>用户名</li>
+                <li>
+                    <form action="" class="form2">
+                    <input type="text" name="revise_name">
+                    <input type="button" value="保存" class="button">
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
