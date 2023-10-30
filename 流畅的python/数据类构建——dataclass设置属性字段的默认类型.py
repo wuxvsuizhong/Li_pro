@@ -1,6 +1,6 @@
 from dataclasses import dataclass,field
 
-# 使用dataclass装饰器会自动生成__init__方法，自动调用__init__把标注了注解的字段在后续的实例构建时抓换为实例属性，
+# 使用dataclass装饰器会自动生成__init__方法，自动调用__init__把标注了注解的字段在后续的实例构建时转换为实例属性，
 
 @dataclass
 class ClubMember:
@@ -9,7 +9,7 @@ class ClubMember:
     guest:list = field(default_factory=list)    #使用default_factory参数指定工厂方法，工厂方法可以是一个函数,类，或者其他的可调用对象
     # 指定了工程方法以后，在每次创建数据类的实例的时候调用(不带参数），构建默认值
 
-c1 = ClubMember("张三")   #传递一个值最为name属性，那么guest熟就使用默认的list方法构建为一个列表
+c1 = ClubMember("张三")   #传递一个值作为name属性，那么guest属性就使用默认的list方法构建为一个列表
 print(c1.name,c1.guest)  # 张三 []
 
 # 更加准确的属性类型
@@ -32,7 +32,7 @@ c3 = ClubClass3("张三")
 print(c2.name,c2.guest,c3.athlete)
 
 ##############################
-# 上述dataclass会自动调用生成的__init__把字段设置为实例属性，但是入股需要一些__init__之后的工作，就需要定义__post_init__方法
+# 上述dataclass会自动调用生成的__init__把字段设置为实例属性，但是如果需要一些__init__之后的工作，就需要定义__post_init__方法
 # 定义了__post_init__方法后，它会被自动调用，去做一些__init__之后的事情
 ##############################
 from typing import ClassVar
