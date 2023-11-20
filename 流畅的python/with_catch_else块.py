@@ -68,7 +68,7 @@ if __name__ == "__main__":
 # contextlib.contextmanager 这个装饰器的作用就是快捷的实现一个上下文管理器，不需要在编写一个上下文管理器类
 # 只需要实现一个含有yield语句的生成器集即可，用啦生成想让__enter__返回的值
 # yield把函数分为两个部分，yield前面的所有代码在with块开始的时候(解释器调用__enter__方法时)执行，yield后面的代码在with结束时(调用__exit__方法时)执行
-# 简而言之，contextmanager装饰器就是把函数包装成了实现__enter__和__exit__方法的上下文管理器类
+# 简而言之，contextmanager装饰器就是把函数,包装成了实现__enter__和__exit__方法的上下文管理器类
 
 # 目前这个looking_glass上下文管理器没有把异常纳入管理，接下来添加异常处理
 
