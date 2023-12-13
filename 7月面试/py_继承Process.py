@@ -17,7 +17,6 @@ def main():
     m1.start()
     print("main end...")
 
-    queue = Manager().
 
 if __name__ == "__main__":
     main()

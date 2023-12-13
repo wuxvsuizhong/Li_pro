@@ -24,6 +24,9 @@ T ="XYZ"
 "AbA"
 '''
 
+
+# 使用滑动窗口实现
+
 s,pattern = input().strip().split()
 rec_map={}
 for c in pattern:

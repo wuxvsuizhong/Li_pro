@@ -51,18 +51,19 @@ def main1():
             return
 
         for i in range(len(res)):
-            if -1 in res[i]:
+            if -1 in res[i]:  # 剪枝，对于同组的res元组(是一个分组),只要有一个被选中即可)
                 return
             for j in range(len(res[i])):
-                oldv = opmap[i][j]
-                if oldv != -1:
-                    grp.append(res[i][j])
-                    opmap[i][j] = -1
-                    dfs(grp)
-                    grp.pop()
-                    opmap[i][j] = oldv
+                if opmap[i][j] != -1:  # 判断元素是否被访问过
+                    oldv = opmap[i][j]  # 备份一下元素的初始值
+                    grp.append(res[i][j])   # 抽取元素添加到分组中
+                    opmap[i][j] = -1    # 这里是对防访问过的元素设置访问标记，子啊一次循环的时候不再参与循环
+                    dfs(grp)    # 递归调用dfs
+                    grp.pop()   # dfs调用地柜调用返回后，恢复grp中的原来的值
+                    opmap[i][j] = oldv # 恢复现场
     dfs([])
-    print(result)
+    print('result:',result)
+    # 排序result
     for i in range(len(result)):
         result[i].sort()
         result[i] = [result[i][0],result[i][-1]]
@@ -79,6 +80,9 @@ def main1():
     # print(minitm)
     b,e = minitm[0],minitm[1]
     print(s[b:e]+s[e])
+
+    # 实际上不需要对result进行排序，只需要选出最大值和最小值即可
+    # subidxs = ([min(each), max(each)] for each in result)
 
 def main():
     chars = input().strip().split()
@@ -120,4 +124,5 @@ def main():
     print(s[l:r]+s[r])
 
 if __name__ == '__main__':
-    main()
+    # main()
+    main1()

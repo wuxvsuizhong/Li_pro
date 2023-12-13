@@ -6,7 +6,7 @@ STOP_CODE = sys.maxunicode + 1
 
 def tokenize(text:str) ->Iterator[str]:
     """返回全大写的单词构成的可迭代对象"""
-    for match in RE_EORD.finditer(text):    # 震泽匹配所有的字符串
+    for match in RE_EORD.finditer(text):    # 正则匹配所有的字符串
         yield match.group().upper()
 
 def name_index(start:int=32,end:int = STOP_CODE) ->dict[str,set[str]]:
